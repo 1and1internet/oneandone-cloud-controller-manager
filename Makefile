@@ -6,6 +6,9 @@ VERSION ?= ${BUILD}
 .PHONY: all
 all: test build
 
+.PHONY: ci
+ci: gofmt govet golint test
+
 .PHONY: govet
 govet:
 	go vet $(shell go list ./... | grep -v vendor)
@@ -13,6 +16,10 @@ govet:
 .PHONY: golint
 golint:
 	golint $(shell go list ./... | grep -v vendor)
+
+.PHONY: gofmt
+gofmt: # run in script cause gofmt will exit 0 even if files need formatting
+	ci/gofmt.sh
 
 .PHONY: test
 test:

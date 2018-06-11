@@ -105,7 +105,7 @@ func serverFromNodeName(nodeName types.NodeName, client *oneandone.API, kubeClie
 
 // nodeAddresses returns a []v1.NodeAddress from server.
 func nodeAddresses(server *oneandone.Server, node *v1.Node) []v1.NodeAddress {
-	addresses := []v1.NodeAddress{v1.NodeAddress{Type: v1.NodeHostName, Address: node.Name}}
+	addresses := []v1.NodeAddress{{Type: v1.NodeHostName, Address: node.Name}}
 
 	// Private IP Addresses
 	for _, privateNetwork := range server.PrivateNets {

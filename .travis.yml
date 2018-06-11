@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.9.x
+  - "1.10.x"
+  - tip
+
+dist: trusty
+
+script:
+  - go get github.com/golang/lint/golint
+  - make ci
+
+branches:
+  only:
+    - master
