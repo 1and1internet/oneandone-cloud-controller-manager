@@ -71,7 +71,3 @@
     name = "github.com/docker/docker"
     go-tests = true
     unused-packages = true
-
-[[constraint]]
-  name = "github.com/leroyshirtoFH/oneandone-cloudserver-sdk-go"
-  branch = "master"
