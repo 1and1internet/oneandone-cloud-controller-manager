@@ -4,9 +4,9 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 
 **WARNING**: this project is a work in progress.  Still TODO are:
 
- - better test coverage
- - automated end-to-end tests
- - Kubernetes compatibility definitions
+- better test coverage
+- automated end-to-end tests
+- Kubernetes compatibility definitions
 
 ## Setup and Installation
 
@@ -36,10 +36,12 @@ This involves:
   key: node.cloudprovider.kubernetes.io/uninitialized
   value: "true"
 ```
+
 If your cluster was created using `kubeadm` >= v1.7.2 this toleration will
 already be applied. See [kubernetes/kubernetes#49017][5] for details.
 
 **If you are running flannel, ensure that kube-flannel tolerates the uninitialised cloud taint:**
+
 - The following should appear in the `kube-flannel` daemonset:
 
 ```yaml
@@ -47,8 +49,6 @@ already be applied. See [kubernetes/kubernetes#49017][5] for details.
   key: node.cloudprovider.kubernetes.io/uninitialized
   value: "true"
 ```
-
-
 
 Remember to restart any components that you have reconfigured before continuing.
 
@@ -71,4 +71,5 @@ kubectl -n kube-system create secret generic oneandone --from-literal=token=`<TO
 `kubectl apply -f manifests/oneandone-ccm.yaml`
 
 ### Installation - without RBAC
+
 `kubectl apply -f manifests/oneandone-ccm.yaml`
