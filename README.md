@@ -10,6 +10,12 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 
 ## Setup and Installation
 
+### Version
+
+This is the current recomended version to run the cloud controller manager based on your Kubernetes version.
+
+- Use CCM <= 0.1.0 if you're running Kubernetes version >= v1.9
+
 ### Preparing Your Cluster
 
 Node names or public IP addresses must match servers in your cloud panel.  If node names do not match, use one of these options:
@@ -17,12 +23,9 @@ Node names or public IP addresses must match servers in your cloud panel.  If no
 - Add the label `stackpoint.io/instance_id` to **all nodes** in your cluster.  The label's value must be the server name.
 - Set the `--hostname-override` flag on the `kubelet` on **all nodes** in your cluster.
 
-Your cluster must be configured to use an external cloud-provider.
+Your cluster should be configured to use an external cloud-provider to take full advantage of this manager. Without this only the loadbalancing provisioning will work.
 
-This involves:
-
-- Setting the `--cloud-provider=external` flag on the `kubelet` on **all nodes** in your cluster.
-- Setting the `--cloud-provider=external` flag on the `kube-controller-manager` in your Kubernetes control plane.
+Enable the external cloud provider by setting the `--cloud-provider=external` flag on the `kubelet` on **all nodes** in your cluster.
 
 **WARNING**: setting `--cloud-provider=external` will taint all nodes in a cluster with `node.cloudprovider.kubernetes.io/uninitialized`.  It is the responsibility of a cloud controller manager to untaint those nodes once it has finished initializing them. This means that most pods will be left unschedulable until the cloud controller manager is running.
 
