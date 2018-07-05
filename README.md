@@ -91,7 +91,7 @@ If you have ansible, terraform and kubectl installed you can run the tests direc
 ```
 export CLOUD_PANEL_API_KEY=xxx
 go test -c ./test/e2e
-e2e -test.v -test.timeout 30m -kubever v1.10.5
+./e2e.test -test.v -test.timeout 30m -kubever v1.10.5
 ```
 
 If you need to clean up any left over cloud panel resources, you can use terraform directly:
