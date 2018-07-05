@@ -90,7 +90,8 @@ If you have ansible, terraform and kubectl installed you can run the tests direc
 
 ```
 export CLOUD_PANEL_API_KEY=xxx
-GOCACHE=off go test -v -timeout 30m ./test/e2e
+go test -c ./test/e2e
+e2e -test.v -test.timeout 30m -kubever v1.10.5
 ```
 
 If you need to clean up any left over cloud panel resources, you can use terraform directly:
@@ -103,7 +104,7 @@ There is also a Dockerfile which can be used to build an image capable of runnin
 
 ```
 docker build -t ccme2e -f Dockerfile-e2e .
-docker run -e CLOUD_PANEL_API_KEY=xxx --rm ccme2e
+docker run -e CLOUD_PANEL_API_KEY=xxx -e K8S_VERSION=v1.10.5 --rm ccme2e
 ```
 
 #### TODO

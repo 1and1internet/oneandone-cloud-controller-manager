@@ -1,6 +1,7 @@
 FROM golang:1.10-alpine
 WORKDIR /go/src/github.com/1and1internet/oneandone-cloud-controller-manager
 COPY . .
+RUN go test -c ./test/e2e
 RUN apk add --no-cache ca-certificates \
   curl \
   terraform \
@@ -10,5 +11,5 @@ RUN curl -L -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-
   chmod +x /usr/local/bin/kubectl
 
 # ENV CLOUD_PANEL_API_KEY xxx
-CMD ["go", "test", "-v", "-timeout", "30m", "./test/e2e"]
+CMD ["./e2e.test", "-test.v", "-test.timeout", "30m"]
 

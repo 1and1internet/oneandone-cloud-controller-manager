@@ -96,3 +96,5 @@ kubeconfig
 .terraform
 terraform.tfstate*
 output.json
+hosts.yaml
+.retry

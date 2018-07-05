@@ -8,7 +8,7 @@
 
 - name: "Init kubeadm"
   run_once: True
-  command: kubeadm init --apiserver-advertise-address={{ private_ip }} --apiserver-cert-extra-sans={{ ansible_default_ipv4.address }} --pod-network-cidr=10.244.0.0/16 --token {{ kubeadm_token }}
+  command: kubeadm init --apiserver-advertise-address={{ private_ip }} --apiserver-cert-extra-sans={{ ansible_default_ipv4.address }} --pod-network-cidr=10.244.0.0/16 --token {{ kubeadm_token }} --ignore-preflight-errors=FileExisting-crictl
   when: kubeconfig_stat.stat.exists == False
 
 - name: "Fetch kubeconfig file"

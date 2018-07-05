@@ -6,5 +6,6 @@
   register: kubelet_config_stat
 
 - name: "Join the cluster"
-  shell: kubeadm join {{ hostvars[groups['masters'][0]]['private_ip'] }}:6443 --token {{ kubeadm_token }} --discovery-token-unsafe-skip-ca-verification
+  shell: kubeadm join {{ hostvars[groups['masters'][0]]['private_ip'] }}:6443 --token {{ kubeadm_token }} --discovery-token-unsafe-skip-ca-verification --ignore-preflight-errors=FileExisting-crictl
+
   when: kubelet_config_stat.stat.exists == False

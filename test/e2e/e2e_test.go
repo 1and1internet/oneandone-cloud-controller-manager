@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -24,11 +25,13 @@ import (
 
 const (
 	cloudPanelAPIKeyEnvVar = "CLOUD_PANEL_API_KEY"
-	terraformE2E           = "terraform"
-	ansibleE2E             = "ansible"
+	k8sVersionEnvVar       = "K8S_VERSION"
+	terraformE2E           = "test/e2e/terraform"
+	ansibleE2E             = "test/e2e/ansible"
+	defaultKubeVersion     = "v1.10.5"
 )
 
-var terraformDir, ansibleDir, kubeconfig string
+var kubeVersion, terraformDir, ansibleDir, kubeconfig string
 
 func init() {
 	dir, err := os.Getwd()
@@ -247,7 +250,8 @@ func buildCluster() error {
 	log.Println("Running Ansible")
 
 	// Run ansible
-	if err = runCommandStreamingStdout(exec.Command("ansible-playbook", "-i", "hosts.yaml", "create-cluster.yaml")); err != nil {
+	extraVars := fmt.Sprintf("\"k8s_version=%s\"", kubeVersion)
+	if err = runCommandStreamingStdout(exec.Command("ansible-playbook", "-i", "hosts.yaml", "--extra-vars", extraVars, "create-cluster.yaml")); err != nil {
 		return err
 	}
 
@@ -378,6 +382,13 @@ func TestMain(m *testing.M) {
 		fmt.Fprintf(os.Stderr, "Cannot run tests: environment variable %s not set\n", cloudPanelAPIKeyEnvVar)
 		os.Exit(1)
 	}
+
+	flag.StringVar(&kubeVersion, "kubever", defaultKubeVersion, "Kubernetes version, e.g. v1.10.5")
+	flag.Parse()
+	if kubeVersion == defaultKubeVersion && os.Getenv(k8sVersionEnvVar) != "" {
+		kubeVersion = os.Getenv(k8sVersionEnvVar)
+	}
+	log.Printf("Using Kubernetes version %s\n", kubeVersion)
 
 	exitCode := func() int {
 		if os.Getenv("CCM_E2E_SKIP_CLUSTER_DELETE") != "true" {
