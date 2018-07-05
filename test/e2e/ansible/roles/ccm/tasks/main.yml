@@ -1,0 +1,42 @@
+---
+# tasks file for roles/ccm
+
+- name: "Check if oneandone secret exists"
+  run_once: True
+  command: kubectl -n kube-system get secret oneandone
+  register: oneandone_secret_exists
+  failed_when: oneandone_secret_exists.rc > 1
+  changed_when: False
+
+- name: "Create oneandone secret"
+  run_once: True
+  command: kubectl -n kube-system create secret generic oneandone --from-literal=token={{ api_token }} --from-literal=credentials-datacenter=GB
+  when: oneandone_secret_exists.rc != 0
+
+- name: "Check if 1and1 cloud controller manager is installed"
+  run_once: True
+  shell: kubectl -n kube-system get deploy oneandone-cloud-controller-manager
+  register: oneandone_ccm_exists
+  failed_when: oneandone_ccm_exists.rc != 0 and oneandone_ccm_exists.rc != 1
+  changed_when: False
+
+- name: "Copy 1and1 cloud controller manager rbac file to server"
+  run_once: True
+  copy:
+    src: oneandone-ccm-rbac.yaml
+    dest: /tmp/oneandone-ccm-rbac.yaml
+  when: oneandone_ccm_exists.rc != 0
+
+- name: "Copy 1and1 cloud controller manager deployment file to server"
+  run_once: True
+  copy:
+    src: oneandone-ccm.yaml
+    dest: /tmp/oneandone-ccm.yaml
+  when: oneandone_ccm_exists.rc != 0  
+
+- name: "Deploy 1and1 cloud controller manager"
+  run_once: True
+  shell: |    
+    kubectl apply -f /tmp/oneandone-ccm-rbac.yaml
+    kubectl apply -f /tmp/oneandone-ccm.yaml
+  when: oneandone_ccm_exists.rc != 0

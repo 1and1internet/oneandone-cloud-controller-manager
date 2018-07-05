@@ -5,7 +5,6 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 **WARNING**: this project is a work in progress.  Still TODO are:
 
 - better test coverage
-- automated end-to-end tests
 - Kubernetes compatibility definitions
 
 ## Setup and Installation
@@ -76,3 +75,43 @@ kubectl -n kube-system create secret generic oneandone --from-literal=token=`<TO
 ### Installation - without RBAC
 
 `kubectl apply -f manifests/oneandone-ccm.yaml`
+
+## Testing
+### End-To-End Tests
+
+*NOTE*: the end-to-end tests create cloud panel resources which you may be billed for.  You will need an API key for cloud panel.  The resources created are:
+
+ - 1 x L virtual server
+ - 2 x M virtual servers
+ - 1 x firewall
+ - 1 x private network
+
+If you have ansible, terraform and kubectl installed you can run the tests directly:
+
+```
+export CLOUD_PANEL_API_KEY=xxx
+GOCACHE=off go test -v -timeout 30m ./test/e2e
+```
+
+If you need to clean up any left over cloud panel resources, you can use terraform directly:
+```
+cd ./test/e2e/terraform
+terraform destroy -var provider_token=xxx
+```
+
+There is also a Dockerfile which can be used to build an image capable of running the tests:
+
+```
+docker build -t ccme2e -f Dockerfile-e2e .
+docker run -e CLOUD_PANEL_API_KEY=xxx --rm ccme2e
+```
+
+#### TODO
+
+The end-to-end tests need to be expanded to include:
+
+ - Joining a node after the cluster is up and running: the new node should be initialised
+ - Deleting a node in cloud panel: the node should be removed from the cluster
+ - Joining a node: the new node should be added to all loadbalancers
+ - Updating a service: the loadbalancer should be updated
+ - Deleting a service: the loadbalancer should be deleted

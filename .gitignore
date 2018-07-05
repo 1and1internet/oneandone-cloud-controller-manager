@@ -91,3 +91,8 @@ debug~
 oneandone-cloud-controller-manager
 notes.txt
 manifests/cloud-provider\.yaml
+id_rsa
+kubeconfig
+.terraform
+terraform.tfstate*
+output.json

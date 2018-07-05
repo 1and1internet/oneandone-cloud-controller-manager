@@ -1,0 +1,17 @@
+all:
+  children:
+    masters:
+      hosts:
+        fast-fowl-master-1:
+          ansible_host: 77.68.76.143
+          private_ip: 192.168.100.2
+    workers:
+      hosts:
+        fast-fowl-worker-1:
+          ansible_host: 77.68.95.43
+          private_ip: 192.168.100.3
+        fast-fowl-worker-2:
+          ansible_host: 77.68.15.213
+          private_ip: 192.168.100.1
+  vars:
+    api_token: 412641fcbc24120b3533f43b194a2816

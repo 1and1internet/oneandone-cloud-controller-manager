@@ -1,0 +1,51 @@
+---
+# tasks file for kubeadm-master
+
+- name: "Check if kubernetes is already set up"
+  run_once: True
+  stat: path=/etc/kubernetes/admin.conf
+  register: kubeconfig_stat
+
+- name: "Init kubeadm"
+  run_once: True
+  command: kubeadm init --apiserver-advertise-address={{ private_ip }} --apiserver-cert-extra-sans={{ ansible_default_ipv4.address }} --pod-network-cidr=10.244.0.0/16 --token {{ kubeadm_token }}
+  when: kubeconfig_stat.stat.exists == False
+
+- name: "Fetch kubeconfig file"
+  run_once: True
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: kubeconfig
+    flat: yes
+
+- name: "Check if flannel is deployed"
+  run_once: True
+  command: kubectl -n kube-system get ds kube-flannel-ds
+  register: flannel_exists
+  failed_when: flannel_exists.rc > 1
+  changed_when: False
+
+- name: "Copy flannel deploy file to master"
+  run_once: True
+  copy:
+    src: kube-flannel.yml
+    dest: /tmp/kube-flannel.yml
+  when: flannel_exists.rc != 0
+
+- name: "Deploy flannel pod network"
+  run_once: True
+  command: kubectl apply -f /tmp/kube-flannel.yml
+  when: flannel_exists.rc != 0
+
+- name: "Create .kube directory for coreos user"
+  file:
+   path: /home/core/.kube
+   state: directory
+
+- name: "Copy kubectl for coreos user"
+  copy:
+    remote_src: True
+    src: /etc/kubernetes/admin.conf
+    dest: /home/core/.kube/config
+    owner: core
+  

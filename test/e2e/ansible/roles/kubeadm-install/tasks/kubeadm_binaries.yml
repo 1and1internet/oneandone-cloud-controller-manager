@@ -1,0 +1,52 @@
+# Installs kubeadm, kubelet, kubectl
+
+- name: "Create /opt/bin directory"
+  file:
+    path: /opt/bin
+    state: directory
+
+- name: "Create empty K8S VERSION file if it does not exist"
+  copy:
+    content: ""
+    dest: /opt/bin/K8S_VERSION
+    force: no
+
+- name: "Check if kubeadm, kubelet, kubectl are installed"
+  lineinfile:
+    path: /opt/bin/K8S_VERSION
+    line: "{{ k8s_version }}"
+  check_mode: yes
+  register: k8s_version_check
+
+- name: "Install kubeadm, kubelet, kubectl"
+  shell: |
+    cd /opt/bin && \
+    curl -L --remote-name-all https://storage.googleapis.com/kubernetes-release/release/{{ k8s_version }}/bin/linux/amd64/{kubeadm,kubelet,kubectl} && \
+    chmod +x {kubeadm,kubelet,kubectl} && \
+    echo "{{ k8s_version }}" > K8S_VERSION
+  args:
+    warn: no
+  when:
+    k8s_version_check.changed
+
+- name: "Create empty HELM_VERSION file if it does not exist"
+  copy:
+    content: ""
+    dest: /opt/bin/HELM_VERSION
+    force: no    
+
+- name: "Check if helm client is installed"
+  lineinfile:
+    path: /opt/bin/HELM_VERSION
+    line: "{{ helm_version }}"
+  check_mode: yes
+  register: helm_version_check
+
+- name: "Install helm client"
+  shell: |
+    cd /opt/bin && \
+    curl https://storage.googleapis.com/kubernetes-helm/helm-{{ helm_version }}-linux-amd64.tar.gz | tar xz -f - && \
+    mv linux-amd64/helm . &&
+    echo "{{ helm_version }}" > HELM_VERSION
+  when:
+    helm_version_check.changed

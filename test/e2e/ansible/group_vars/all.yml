@@ -1,0 +1,4 @@
+---
+ansible_ssh_user: core
+ansible_python_interpreter: /home/core/bin/python
+kubeadm_token: "abcdef.{{ '1234567890abcdef' | shuffle(seed=hostvars[groups['masters'][0]]['inventory_hostname']) | join }}"

@@ -1,0 +1,27 @@
+---
+- hosts: all
+  gather_facts: false
+  roles:
+    - vmware.coreos-bootstrap
+- hosts: all
+  become: true
+  roles:
+    - kubeadm-install
+- hosts: masters
+  become: true
+  roles:
+    - kubeadm-master
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+- hosts: workers
+  become: true
+  roles:
+    - kubeadm-worker
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+- hosts: masters
+  roles:
+    - helmprep
+    - ccm
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/opt/bin"

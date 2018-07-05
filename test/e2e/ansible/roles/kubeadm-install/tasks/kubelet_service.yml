@@ -1,0 +1,44 @@
+# Setup kubelet service
+
+- name: "Check for kubelet service file"
+  stat:
+    path: /etc/systemd/system/kubelet.service
+  register: kubelet_service_stat_result
+
+- name: "Get kubelet service file"
+  shell: curl -sSL "https://raw.githubusercontent.com/kubernetes/kubernetes/{{ k8s_version }}/build/debs/kubelet.service" | sed "s:/usr/bin:/opt/bin:g" > /etc/systemd/system/kubelet.service
+  args:
+    warn: no
+  when: kubelet_service_stat_result.stat.exists == False
+
+- name: "Create kubelet.service.d"
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    state: directory
+
+- name: "Check for kubelet service kubeadm.conf"
+  stat: 
+    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  register: kubelet_service_kubeadm_conf_stat_result
+
+- name: "Get kubelet service kubeadm.conf"
+  shell: curl -sSL "https://raw.githubusercontent.com/kubernetes/kubernetes/{{ k8s_version }}/build/debs/10-kubeadm.conf" | sed "s:/usr/bin:/opt/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+  args:
+    warn: no
+  when: kubelet_service_kubeadm_conf_stat_result.stat.exists == False
+  register: kubelet_service
+
+- name: "Kubelet extra args"
+  copy:
+    dest: /etc/systemd/system/kubelet.service.d/20-extraargs.conf
+    content: "[Service]\nEnvironment=\"KUBELET_EXTRA_ARGS=--cloud-provider=external --node-ip={{ private_ip }}\"\n"
+    # Environment="KUBELET_EXTRA_ARGS=--cloud-provider=external --node-ip={{ private_ip }} --volume-plugin-dir=/opt/kubernetes/kubelet-plugins/volume/exec"
+  register: kubelet_service_args
+
+- name: "(Re)start kubelet"
+  systemd:
+    name: kubelet
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  when: kubelet_service.changed or kubelet_service_args.changed
