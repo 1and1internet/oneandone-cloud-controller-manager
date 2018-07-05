@@ -250,7 +250,7 @@ func buildCluster() error {
 	log.Println("Running Ansible")
 
 	// Run ansible
-	extraVars := fmt.Sprintf("\"k8s_version=%s\"", kubeVersion)
+	extraVars := fmt.Sprintf("k8s_version=%s", kubeVersion)
 	if err = runCommandStreamingStdout(exec.Command("ansible-playbook", "-i", "hosts.yaml", "--extra-vars", extraVars, "create-cluster.yaml")); err != nil {
 		return err
 	}

@@ -94,6 +94,7 @@ manifests/cloud-provider\.yaml
 id_rsa
 kubeconfig
 .terraform
+.terraform.*
 terraform.tfstate*
 output.json
 hosts.yaml
