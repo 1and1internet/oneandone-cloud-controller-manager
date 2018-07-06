@@ -5,7 +5,6 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 **WARNING**: this project is a work in progress.  Still TODO are:
 
 - better test coverage
-- Kubernetes compatibility definitions
 
 ## Setup and Installation
 
