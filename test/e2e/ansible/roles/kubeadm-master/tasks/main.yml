@@ -10,6 +10,13 @@
   run_once: True
   command: kubeadm init --apiserver-advertise-address={{ private_ip }} --apiserver-cert-extra-sans={{ ansible_default_ipv4.address }} --pod-network-cidr=10.244.0.0/16 --token {{ kubeadm_token }} --ignore-preflight-errors=FileExisting-crictl
   when: kubeconfig_stat.stat.exists == False
+ 
+- name: "Ensure kube-proxy tolerates all taints"
+  run_once: True
+  command: kubectl -n kube-system patch ds kube-proxy -p '{"spec":{"template":{"spec":{"tolerations":[{"operator":"Exists"}]}}}}'
+  register: kube_proxy_ds_patched
+  failed_when: kube_proxy_ds_patched.rc > 1
+  changed_when: kube_proxy_ds_patched.rc == 0 
 
 - name: "Fetch kubeconfig file"
   run_once: True
