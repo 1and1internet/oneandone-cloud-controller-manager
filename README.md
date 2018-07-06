@@ -11,9 +11,13 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 
 ### Version
 
-This is the current recomended version to run the cloud controller manager based on your Kubernetes version.
+These are the recommended cloud controller manager versions based on your Kubernetes version:
 
-- Use CCM <= 0.1.0 if you're running Kubernetes version >= v1.9
+| Kubernetes version | CCM version |
+| ------------------ | ----------- |
+| 1.9                | = 0.1.0     |
+| 1.10               | = 0.1.0     |
+| 1.11               | = 0.1.0     |
 
 ### Preparing Your Cluster
 
@@ -39,7 +43,7 @@ Enable the external cloud provider by setting the `--cloud-provider=external` fl
   value: "true"
 ```
 
-If your cluster was created using `kubeadm` >= v1.7.2 this toleration will
+If your cluster was created using `kubeadm` >= v1.7.2 this toleration *may*
 already be applied. See [kubernetes/kubernetes#49017][5] for details.
 
 **If you are running flannel, ensure that kube-flannel tolerates the uninitialised cloud taint:**
