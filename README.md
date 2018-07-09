@@ -2,10 +2,10 @@
 
 oneandone-cloud-controller-manager is the Kubernetes cloud controller manager implementation for 1and1. Read more about cloud controller managers [here](https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller/). Running oneandone-cloud-controller-manager allows you to leverage the cloud provider features offered by 1and1 on your kubernetes clusters.
 
-**WARNING**: this project is a work in progress.  Still TODO are:
+**WARNING**: this project is a work in progress.  Still TODO:
 
 - better test coverage
-- parametrise ccm version so different ccm's can be e2e tested
+- investigate startup warnings
 
 ## Setup and Installation
 
@@ -120,3 +120,4 @@ The end-to-end tests need to be expanded to include:
  - Joining a node: the new node should be added to all loadbalancers
  - Updating a service: the loadbalancer should be updated
  - Deleting a service: the loadbalancer should be deleted
+ - Parameterise CCM version so different CCMs can be e2e tested
