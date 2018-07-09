@@ -31,11 +31,11 @@ func getPrivateIP(apiToken, hostname string) (string, error) {
 		return "", err
 	}
 	if len(servers) != 1 {
-		return "", fmt.Errorf("Could not find server for hostname %s", hostname)
+		return "", fmt.Errorf("could not find server for hostname %s", hostname)
 	}
 	server := servers[0]
 	if len(server.PrivateNetworks) != 1 {
-		return "", fmt.Errorf("Could not find private network for server %s", hostname)
+		return "", fmt.Errorf("could not find private network for server %s", hostname)
 	}
 	return server.PrivateNetworks[0].ServerIP, nil
 }
