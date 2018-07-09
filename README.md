@@ -5,6 +5,7 @@ oneandone-cloud-controller-manager is the Kubernetes cloud controller manager im
 **WARNING**: this project is a work in progress.  Still TODO are:
 
 - better test coverage
+- parametrise ccm version so different ccm's can be e2e tested
 
 ## Setup and Installation
 
@@ -92,7 +93,7 @@ kubectl -n kube-system create secret generic oneandone --from-literal=token=`<TO
 If you have ansible, terraform and kubectl installed you can run the tests directly:
 
 ```
-export CLOUD_PANEL_API_KEY=xxx
+export ONEANDONE_API_KEY=xxx
 go test -c ./test/e2e
 ./e2e.test -test.v -test.timeout 30m -kubever v1.10.5
 ```
@@ -107,7 +108,7 @@ There is also a Dockerfile which can be used to build an image capable of runnin
 
 ```
 docker build -t ccme2e -f Dockerfile-e2e .
-docker run -e CLOUD_PANEL_API_KEY=xxx -e K8S_VERSION=v1.10.5 --rm ccme2e
+docker run -e ONEANDONE_API_KEY=xxx -e K8S_VERSION=v1.10.5 --rm ccme2e
 ```
 
 #### TODO

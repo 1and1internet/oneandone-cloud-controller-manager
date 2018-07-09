@@ -75,12 +75,12 @@ func getNodes() ([]corev1.Node, error) {
 }
 
 func createNamespace(name string) error {
-	_, err := clientset.Core().Namespaces().Create(&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: name}})
+	_, err := clientset.CoreV1().Namespaces().Create(&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: name}})
 	return err
 }
 
 func deleteNamespace(name string) error {
-	return clientset.Core().Namespaces().Delete(name, nil)
+	return clientset.CoreV1().Namespaces().Delete(name, nil)
 }
 
 func createNginxDeployment() error {
@@ -115,7 +115,7 @@ func getSvcExternalIP(namespace, serviceName string, timeout time.Duration) (str
 		fields.SelectorFromSet(map[string]string{"metadata.name": serviceName}))
 	evt, err := cache.ListWatchUntil(timeout, svcListWatcher, func(evt watch.Event) (bool, error) {
 		lb := evt.Object.(*corev1.Service).Status.LoadBalancer
-		return (len(lb.Ingress) > 0 && lb.Ingress[0].IP != ""), nil
+		return len(lb.Ingress) > 0 && lb.Ingress[0].IP != "", nil
 	})
 	if err != nil {
 		return "", nil

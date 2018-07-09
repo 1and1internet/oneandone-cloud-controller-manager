@@ -24,11 +24,11 @@ import (
 )
 
 const (
-	cloudPanelAPIKeyEnvVar = "CLOUD_PANEL_API_KEY"
-	k8sVersionEnvVar       = "K8S_VERSION"
-	terraformE2E           = "test/e2e/terraform"
-	ansibleE2E             = "test/e2e/ansible"
-	defaultKubeVersion     = "v1.10.5"
+	oneandoneAPIKeyEnvVar = "ONEANDONE_API_KEY"
+	k8sVersionEnvVar      = "K8S_VERSION"
+	terraformE2E          = "test/e2e/terraform"
+	ansibleE2E            = "test/e2e/ansible"
+	defaultKubeVersion    = "v1.10.5"
 )
 
 var kubeVersion, terraformDir, ansibleDir, kubeconfig string
@@ -113,7 +113,7 @@ func writeSSHPrivateKeyFile(t terraformOutput) error {
 
 func writeAnsibleHostsFile(t terraformOutput) error {
 	hostsFile := ansibleHostsFile{}
-	var token = os.Getenv(cloudPanelAPIKeyEnvVar)
+	var token = os.Getenv(oneandoneAPIKeyEnvVar)
 
 	children := &hostsFile.All.Children
 	children.Masters.Hosts = make(map[string]ansibleHostVars)
@@ -177,7 +177,7 @@ func buildCluster() error {
 		err    error
 	)
 
-	token := os.Getenv(cloudPanelAPIKeyEnvVar)
+	token := os.Getenv(oneandoneAPIKeyEnvVar)
 	terraformTokenVar := fmt.Sprintf("provider_token=%s", token)
 
 	log.Println("Preparing Terraform")
@@ -269,7 +269,7 @@ func buildCluster() error {
 func deleteCluster() error {
 	log.Println("Deleting cluster")
 
-	token := os.Getenv(cloudPanelAPIKeyEnvVar)
+	token := os.Getenv(oneandoneAPIKeyEnvVar)
 	terraformTokenVar := fmt.Sprintf("provider_token=%s", token)
 
 	if err := os.Chdir(terraformDir); err != nil {
@@ -378,8 +378,8 @@ loop:
 }
 
 func TestMain(m *testing.M) {
-	if os.Getenv(cloudPanelAPIKeyEnvVar) == "" {
-		fmt.Fprintf(os.Stderr, "Cannot run tests: environment variable %s not set\n", cloudPanelAPIKeyEnvVar)
+	if os.Getenv(oneandoneAPIKeyEnvVar) == "" {
+		fmt.Fprintf(os.Stderr, "Cannot run tests: environment variable %s not set\n", oneandoneAPIKeyEnvVar)
 		os.Exit(1)
 	}
 

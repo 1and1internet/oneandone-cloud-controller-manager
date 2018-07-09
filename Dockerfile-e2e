@@ -10,6 +10,6 @@ RUN apk add --no-cache ca-certificates \
 RUN curl -L -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
   chmod +x /usr/local/bin/kubectl
 
-# ENV CLOUD_PANEL_API_KEY xxx
+# ENV ONEANDONE_API_KEY xxx
 CMD ["./e2e.test", "-test.v", "-test.timeout", "30m"]
 
