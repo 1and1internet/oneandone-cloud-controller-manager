@@ -1,0 +1,22 @@
+- name: "Get private MAC"
+  uri:
+    url: http://169.254.169.254/latest/meta_data/interfaces/private/0/mac
+    return_content: yes
+  register: private_mac_result
+
+- name: "Set private MAC fact"
+  set_fact:
+    private_mac: "{{ private_mac_result.content }}"
+
+- name: "Configure private network interface"
+  template:
+    src: private-0.network
+    dest: /etc/systemd/network/private-0.network
+    mode: 0644
+  register: private_network_configured
+
+- name: "Restart networking"
+  systemd:
+    name: systemd-networkd
+    state: restarted
+  when: private_network_configured.changed

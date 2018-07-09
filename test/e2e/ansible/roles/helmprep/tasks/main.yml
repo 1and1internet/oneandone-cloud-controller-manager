@@ -1,0 +1,43 @@
+---
+# tasks file for roles/helmprep
+
+- name: "Check if tiller serviceaccount exists"
+  run_once: True
+  command: kubectl -n kube-system get sa tiller
+  register: tiller_sa_exists
+  failed_when: tiller_sa_exists.rc > 1
+  changed_when: False
+
+- name: "Create tiller serviceaccount"
+  run_once: True
+  command: kubectl create serviceaccount tiller --namespace kube-system
+  when: tiller_sa_exists.rc != 0
+
+- name: "Check if tiller rolebinding exists"
+  run_once: True
+  command: kubectl get ClusterRoleBinding tiller
+  register: tiller_rolebinding_exists
+  failed_when: tiller_rolebinding_exists.rc > 1
+  changed_when: False
+
+- name: "Copy tiller rolebinding file to master"
+  run_once: True
+  copy:
+    src: tiller-rolebinding.yaml
+    dest: /tmp/tiller-rolebinding.yaml
+  when: tiller_rolebinding_exists.rc != 0
+
+- name: "Create tiller ClusterRoleBinding"
+  run_once: True
+  command: kubectl create -f /tmp/tiller-rolebinding.yaml
+  when: tiller_rolebinding_exists.rc != 0
+
+- name: "Check if helm is set up"
+  run_once: True
+  stat: path=/home/core/.helm
+  register: helm_init_stat
+
+- name: "Helm init"
+  run_once: True
+  command: helm init --service-account tiller
+  when: helm_init_stat.stat.exists == False

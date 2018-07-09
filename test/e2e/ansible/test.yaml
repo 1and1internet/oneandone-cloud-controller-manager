@@ -1,0 +1,10 @@
+---
+- hosts: masters
+  gather_facts: false
+  tasks:
+    - name: test token
+      debug:
+        msg: "Token is {{ kubeadm_token }}"
+    - name: test private ip
+      debug:
+        msg: "Master private IP is {{ hostvars[groups['masters'][0]]['private_ip'] }}"

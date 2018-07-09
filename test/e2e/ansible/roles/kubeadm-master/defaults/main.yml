@@ -1,0 +1,4 @@
+---
+# defaults file for kubeadm-master
+
+private_network: "192.168.0.0/24"

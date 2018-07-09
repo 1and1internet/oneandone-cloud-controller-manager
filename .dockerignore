@@ -5,6 +5,11 @@
 Gopkg.lock
 Gopkg.toml
 oneandone-cloud-controller-manager
+*.test
 Dockerfile
+Dockerfile-e2e
 manifests
 README.md
+test/e2e/ansible/hosts.yaml
+test/e2e/ansible/id_rsa
+test/e2e/terraform/terraform.tfstate*

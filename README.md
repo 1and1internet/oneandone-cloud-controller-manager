@@ -2,11 +2,10 @@
 
 oneandone-cloud-controller-manager is the Kubernetes cloud controller manager implementation for 1and1. Read more about cloud controller managers [here](https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller/). Running oneandone-cloud-controller-manager allows you to leverage the cloud provider features offered by 1and1 on your kubernetes clusters.
 
-**WARNING**: this project is a work in progress.  Still TODO are:
+**WARNING**: this project is a work in progress.  Still TODO:
 
 - better test coverage
-- automated end-to-end tests
-- Kubernetes compatibility definitions
+- investigate startup warnings
 
 ## Setup and Installation
 
@@ -44,7 +43,7 @@ Enable the external cloud provider by setting the `--cloud-provider=external` fl
   value: "true"
 ```
 
-If your cluster was created using `kubeadm` >= v1.7.2 this toleration will
+If your cluster was created using `kubeadm` >= v1.7.2 this toleration *may*
 already be applied. See [kubernetes/kubernetes#49017][5] for details.
 
 **If you are running flannel, ensure that kube-flannel tolerates the uninitialised cloud taint:**
@@ -80,3 +79,46 @@ kubectl -n kube-system create secret generic oneandone --from-literal=token=`<TO
 ### Installation - without RBAC
 
 `kubectl apply -f manifests/oneandone-ccm.yaml`
+
+## Testing
+### End-To-End Tests
+
+*NOTE*: the end-to-end tests create cloud panel resources which you may be billed for.  You will need an API key for cloud panel.  The resources created are:
+
+ - 1 x L virtual server
+ - 2 x M virtual servers
+ - 1 x firewall
+ - 1 x private network
+
+If you have ansible, terraform and kubectl installed you can run the tests directly:
+
+```
+export ONEANDONE_API_KEY=xxx
+go test -c ./test/e2e
+./e2e.test -test.v -test.timeout 30m -kubever v1.10.5
+```
+
+If you need to clean up any left over cloud panel resources, you can use terraform directly:
+```
+cd ./test/e2e/terraform
+terraform destroy -var provider_token=xxx
+```
+
+There is also a Dockerfile which can be used to build an image capable of running the tests:
+
+```
+docker build -t ccme2e -f Dockerfile-e2e .
+docker run -e ONEANDONE_API_KEY=xxx -e K8S_VERSION=v1.10.5 --rm ccme2e
+```
+
+#### TODO
+
+The end-to-end tests need to be expanded to include:
+
+ - Joining a node after the cluster is up and running: the new node should be initialised
+ - Deleting a node in cloud panel: the node should be removed from the cluster
+ - Joining a node: the new node should be added to all loadbalancers
+ - Updating a service: the loadbalancer should be updated
+ - Deleting a service: the loadbalancer should be deleted
+ - Parameterise CCM version so different CCMs can be e2e tested
+

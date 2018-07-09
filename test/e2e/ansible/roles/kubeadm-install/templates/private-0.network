@@ -1,0 +1,5 @@
+[Match]
+MACAddress={{ private_mac }}
+
+[Network]
+Address={{ private_ip }}/24

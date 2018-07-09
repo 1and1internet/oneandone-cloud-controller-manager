@@ -1,0 +1,25 @@
+- name: "Create CNI plugin directory"
+  file:
+    path: /opt/cni/bin
+    state: directory
+
+- name: "Create empty CNI VERSION file if it does not exist"
+  copy:
+    content: ""
+    dest: /opt/cni/bin/VERSION
+    force: no
+
+- name: "Check if CNI plugins are installed"
+  lineinfile:
+    path: /opt/cni/bin/VERSION
+    line: "{{ cni_version }}"
+  check_mode: yes
+  register: cni_version_check
+
+- name: "Install CNI plugins"
+  shell: |
+    curl -L "https://github.com/containernetworking/plugins/releases/download/{{ cni_version }}/cni-plugins-amd64-{{ cni_version }}.tgz" | tar -C /opt/cni/bin -xz && \
+    echo "{{ cni_version }}" > /opt/cni/bin/VERSION
+  args:
+    warn: no
+  when: cni_version_check.changed
