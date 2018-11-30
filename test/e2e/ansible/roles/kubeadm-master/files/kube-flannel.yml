@@ -104,6 +104,9 @@ spec:
       - key: node.cloudprovider.kubernetes.io/uninitialized
         effect: NoSchedule
         value: "true"
+      - key: node.kubernetes.io/not-ready
+        operator: Exists
+        effect: NoSchedule
       serviceAccountName: flannel
       initContainers:
       - name: install-cni

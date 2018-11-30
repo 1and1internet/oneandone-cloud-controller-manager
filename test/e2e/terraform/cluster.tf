@@ -6,6 +6,10 @@ data "oneandone_instance_size" "L" {
   name = "L"
 }
 
+data "oneandone_instance_size" "XL" {
+  name = "XL"
+}
+
 resource "random_pet" "cluster_name" {
 }
 
