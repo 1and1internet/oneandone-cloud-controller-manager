@@ -98,4 +98,4 @@ kubeconfig
 terraform.tfstate*
 output.json
 hosts.yaml
-.retry
+*.retry
