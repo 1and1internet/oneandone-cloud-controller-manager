@@ -1,15 +1,13 @@
-language: go
-
-go:
-  - 1.9.x
-  - "1.10.x"
-  - tip
-
-dist: trusty
+env:
+  - K8S_VERSION=v1.11
+  - K8S_VERSION=v1.12.3
+  
+services:
+  - docker
 
 script:
-  - go get github.com/golang/lint/golint
-  - make ci
+  - docker build -t ccme2e -f Dockerfile-e2e .
+  - docker run --rm -e ONEANDONE_API_KEY=$ONEANDONE_API_KEY -e K8S_VERSION=$K8S_VERSION ccme2e
 
 branches:
   only:
